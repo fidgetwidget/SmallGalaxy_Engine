@@ -13,7 +13,6 @@ namespace SmallGalaxy_Engine.Lighting
         private GraphicsDevice _device;
         private PrimitiveBatch _pBatch;
         private RenderTarget2D _lightmap;
-        private Color _shadowColor = Color.Black;
 
         public RenderTarget2D RenderTarget { get { return _lightmap; } }
 
@@ -24,11 +23,11 @@ namespace SmallGalaxy_Engine.Lighting
             _lightmap = new RenderTarget2D(device, device.Viewport.Width, device.Viewport.Height);
         }
 
-        public void Begin(ref Rectangle area) 
+        public void Begin(ref Rectangle area, Color color) 
         {
             _device.RasterizerState = RasterizerState.CullNone;
             _device.SetRenderTarget(_lightmap);
-            _device.Clear(_shadowColor);
+            _device.Clear(color);
             _pBatch.Projection = Matrix.CreateOrthographicOffCenter(
                 area.Left, area.Right, area.Bottom, area.Top, 0, 1);
             _pBatch.Begin(PrimitiveType.TriangleList); 
@@ -52,15 +51,30 @@ namespace SmallGalaxy_Engine.Lighting
 
         public void DrawShadows(IShadowCaster sc, Vector2 light, float lightRange)
         {
+            DrawShadows(sc, light, lightRange, 0, Color.Black);
+        }
+
+        public void DrawShadows(IShadowCaster sc, Vector2 light, float lightRange, Color color)
+        {
+            DrawShadows(sc, light, lightRange, 0, color);
+        }
+
+        public void DrawShadows(IShadowCaster sc, Vector2 light, float lightRange, float penetration, Color color)
+        {
             if (!sc.HasEdges()) { return; }
             Verticies verticies = sc.GetEdges();
-            Color color = _shadowColor;
-            
-            for (int i = 0; i < verticies.Length - 1; i+=2)
+
+            for (int i = 0; i < verticies.Length - 1; i += 2)
             {
                 Vector2 start, end;
                 start = verticies[i];
                 end = verticies[i + 1];
+                if (penetration != 0)
+                {
+                    start = new Line(light, Vector2.Distance(light, start) + penetration, start).End;
+                    end = new Line(light, Vector2.Distance(light, end) + penetration, end).End;
+                }
+
                 if (DoesEdgeCastShadow(start, end, light))
                 {
                     _pBatch.AddVertex(start, color);
@@ -72,8 +86,9 @@ namespace SmallGalaxy_Engine.Lighting
                     _pBatch.AddVertex(ProjectPoint(end, light, lightRange), color);
                 }
             }
-
         }
+
+        
        
 
         private bool DoesEdgeCastShadow(Vector2 start, Vector2 end, Vector2 light)
@@ -89,6 +104,16 @@ namespace SmallGalaxy_Engine.Lighting
 
         }
 
+        // returns point projected from lightToPoint beyond point
+        // light<-(distance)->point<-(distance)->(result)
+        private Vector2 ProjectPoint(Vector2 point, Vector2 light)
+        {
+            Vector2 lightToPoint = Vector2.Subtract(point, light);
+            return Vector2.Add(point, lightToPoint);
+        }
+
+        // returns point projected from lightToPoint beyond point up to lightRange
+        // light<-(distance)->point<-(lightRange)->(result)
         private Vector2 ProjectPoint(Vector2 point, Vector2 light, float lightRange)
         {
             Vector2 lightToPoint = Vector2.Subtract(point, light);

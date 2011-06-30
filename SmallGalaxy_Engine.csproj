@@ -112,6 +112,7 @@
     <Compile Include="Debug\DebugSystem.cs" />
     <Compile Include="Debug\FpsCounter.cs" />
     <Compile Include="Debug\IDebugCommandHost.cs" />
+    <Compile Include="Entities\Interfaces\Interfaces.cs" />
     <Compile Include="Entities\Transform.cs" />
     <Compile Include="Graphics\Lighting\IShadowCaster.cs" />
     <Compile Include="Graphics\Lighting\LightMap.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Common\Properties\Property.cs" />
     <Compile Include="Common\Properties\PropertyCollection.cs" />
     <Compile Include="Tiles\Cell.cs" />
+    <Compile Include="Tiles\ITileable.cs" />
     <Compile Include="Tiles\Map.cs" />
     <Compile Include="Animations\ClockManager.cs" />
     <Compile Include="Graphics\FontManager.cs" />

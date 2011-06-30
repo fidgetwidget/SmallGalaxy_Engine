@@ -7,16 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SmallGalaxy_Engine.Entities
 {
-
-    // for objects that have position, rotation, scale data
-    public interface ITransformable { Matrix GetTransform(); void SetTransform(Matrix transform); void SetPosition(float x, float y); void SetRotation(float rotation); void SetScale(float x, float y); }
-
-    // for objects that have an origin
-    public interface IPivotable { void SetPivot(Vector2 pivot); }
-
-    // for objects that have a color tint
-    public interface ITintable { void SetTint(Color tint); }
-
+    
     public abstract class Entity : IDisposable, ICloneable, ITransformable
     {
 
@@ -58,19 +49,6 @@ namespace SmallGalaxy_Engine.Entities
         #endregion // Properties
 
 
-        #region Events
-
-        public event EventHandler PositionChangedEvent;
-        public event EventHandler RotationChangedEvent;
-
-        public event EventHandler PreInitEvent;
-        public event EventHandler InitCompleteEvent;
-        public event EventHandler PreLoadEvent;
-        public event EventHandler LoadCompleteEvent;
-
-        #endregion // Events
-
-
         #region Init
 
         public Entity() { }
@@ -83,14 +61,8 @@ namespace SmallGalaxy_Engine.Entities
         {
             if (_isInitialized) { return; }
 
-            if (PreInitEvent != null)
-                PreInitEvent(null, EventArgs.Empty);
-
             InitCore();
             _isInitialized = true;
-
-            if (InitCompleteEvent != null)
-                InitCompleteEvent(null, EventArgs.Empty);
         }
         protected virtual void InitCore() { }
 
@@ -99,14 +71,8 @@ namespace SmallGalaxy_Engine.Entities
             if (!_isInitialized) { Initialize(); }
             if (_isLoaded) { return; }
 
-            if (PreLoadEvent != null)
-                PreLoadEvent(null, EventArgs.Empty);
-
             LoadCore();
             _isLoaded = true;
-
-            if (LoadCompleteEvent != null)
-                LoadCompleteEvent(null, EventArgs.Empty);
         }
         protected virtual void LoadCore() { }
 
@@ -154,21 +120,20 @@ namespace SmallGalaxy_Engine.Entities
             return Position;
         }
 
+        public Vector2 GetPosition() { return _transform.position; }
         public virtual void SetPosition(float x, float y)
         {
             _transform.x = x;
             _transform.y = y;
-
-            if (PositionChangedEvent != null)
-                PositionChangedEvent(null, EventArgs.Empty);
         }
 
+        public float GetRotation() { return _transform.rotation; }
         public virtual void SetRotation(float rotation)
         {
             _transform.rotation = rotation;
-            if (RotationChangedEvent != null)
-                RotationChangedEvent(null, EventArgs.Empty);
         }
+
+        public Vector2 GetScale() { return _transform.scale; }
         public virtual void SetScale(float x, float y)
         {
             _transform.scaleX = x;

@@ -74,7 +74,7 @@ namespace SmallGalaxy_Engine
     #endregion // Tiles Helper Class
        
 
-    public class Cell<T> where T : Entity
+    public class Cell<T> where T : Entity, ITileable
     {
 
         #region Fields
@@ -158,13 +158,16 @@ namespace SmallGalaxy_Engine
             if (entity != null) 
             {
                 _entity = entity;
-                _entity.Position = Position; // set the objects position to the cell's center
+                _entity.SetPosition(X, Y);
+                _entity.SetCoord(_coord.X, _coord.Y);
             }            
             if (EntityAddedEvent != null) { EntityAddedEvent(this, EventArgs.Empty); }
         }
         public void RemoveEntity()
-        {
+        {            
+            _entity.SetCoord(-1, -1);
             _entity = null;
+
             if (EntityRemovedEvent != null) { EntityRemovedEvent(this, EventArgs.Empty); }
         }
 
@@ -174,18 +177,7 @@ namespace SmallGalaxy_Engine
         }
 
         #endregion // Methods
-
-
-        #region Draw
-
-        public void Draw(SpriteBatch batch)
-        {
-            if (IsEmpty) { return; }
-            _entity.Draw(batch);
-        }
-
-        #endregion // Draw
-
+        
 
         #region Operators
 

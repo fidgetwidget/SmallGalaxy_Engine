@@ -60,7 +60,7 @@ namespace SmallGalaxy_Engine.Sprites
 
         public Vector2 Paralax { get { return _paralax; } set { SetParalax(value.X, value.Y); } }
         public float ParalaxFactor { get { return _paralaxFactor; } set { SetParalaxFactor(value); } }
-        public Vector2 Origin { get { return _origin; } set { SetPivot(value); } }
+        public Vector2 Origin { get { return _origin; } set { SetPivot(value.X, value.Y); } }
         public Color Tint { get { return _tint; } set { SetTint(value); } }
         public byte Alpha { get { return _tint.A; } set { SetAlpha(value); } }
         
@@ -232,16 +232,14 @@ namespace SmallGalaxy_Engine.Sprites
             _paralaxFactor = value;
         }
 
-        public void SetPivot(Vector2 pivot)
-        {
-            SetPivot(pivot.X, pivot.Y);
-        }
+        public Vector2 GetPivot() { return _origin; }
         public virtual void SetPivot(float x, float y)
         {
             _origin.X = x;
             _origin.Y = y;
         }
-        
+
+        public Color GetTint() { return _tint; }
         public void SetTint(Color value)
         {
             SetTint(value, value.A);

@@ -10,9 +10,9 @@ using SmallGalaxy_Engine;
 using SmallGalaxy_Engine.Entities;
 
 namespace SmallGalaxy_Engine
-{    
+{
 
-    public class Map<T> : Grid<Cell<T>> where T : Entity
+    public class Map<T> : Grid<Cell<T>> where T : Entity, ITileable
     {
 
         #region Fields
