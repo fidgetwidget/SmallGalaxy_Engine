@@ -7,7 +7,6 @@ namespace SmallGalaxy_Engine
 {
     public static class MatrixHelper
     {
-
         public static void GetTransformMatrix(ref Vector2 position, ref float rotation, ref Vector2 scale, out Matrix transform)
         {
             Matrix rotM, scaleM, posM, temp;

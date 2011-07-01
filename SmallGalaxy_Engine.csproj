@@ -136,8 +136,6 @@
     <Compile Include="Animations\Sprite\TextSpriteAnimationManager.cs" />
     <Compile Include="Entities\Sprites\TextSprites\DialogTextSprite.cs" />
     <Compile Include="Entities\Sprites\TextSprites\NumericTextSprite.cs" />
-    <Compile Include="Animations\Sprite\SpriteAnimationManager.cs" />
-    <Compile Include="Entities\Sprites\FrameSprites\FittedFrameSprite.cs" />
     <Compile Include="Graphics\Frame\Frame.cs" />
     <Compile Include="Entities\Sprites\FrameSprites\FrameSprite.cs" />
     <Compile Include="Entities\Sprites\TextSprites\TextSprite.cs" />
@@ -148,8 +146,6 @@
     <Compile Include="Tiles\Map.cs" />
     <Compile Include="Animations\ClockManager.cs" />
     <Compile Include="Graphics\FontManager.cs" />
-    <Compile Include="Entities\Sprites\Sprite.cs" />
-    <Compile Include="Entities\Sprites\SpriteCollection.cs" />
     <Compile Include="Tiles\Grid.cs" />
     <Compile Include="Input\InputManager.cs" />
     <Compile Include="Primitives\Hex\Hex.cs" />

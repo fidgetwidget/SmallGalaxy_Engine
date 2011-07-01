@@ -104,9 +104,9 @@ namespace SmallGalaxy_Engine.Scenes
 
         #region Methods
 
-        protected override void TextChanged()
+        protected override void SetText(string text)
         {
-            base.TextChanged();
+            base.SetText(text);
             _selectedText = "[" + Text.ToUpper() + "]";
         }
 

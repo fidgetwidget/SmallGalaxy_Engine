@@ -15,7 +15,7 @@ namespace SmallGalaxy_Engine.Puppet
 
     // The Puppet is basically a Sprite with a collection of FrameSprite Children 
     // using Keyframe animations instead of the more linear animations of the Sprite Class
-    public class Puppet : Sprite
+    public class Puppet : FrameSprite
     {
 
         #region Fields
@@ -44,7 +44,6 @@ namespace SmallGalaxy_Engine.Puppet
 
         public override void Update(float elapsedTime)
         {
-            base.Update(elapsedTime);
             _animManager.Update(elapsedTime);
         }
 
@@ -55,8 +54,8 @@ namespace SmallGalaxy_Engine.Puppet
 
         public void AddPart(string name, Frame frame)
         {
-            PuppetPart p = new PuppetPart(Children.Count, name, frame, this);
-            Children.Add(p);
+            PuppetPart p = new PuppetPart(childCount, name, frame, this);
+            AddChild(p);
         }
 
         #endregion // Methods

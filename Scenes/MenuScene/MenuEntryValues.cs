@@ -136,8 +136,8 @@ namespace SmallGalaxy_Engine.Scenes
             _rightArrow.IsVisible = ShowArrows;
             _rightArrow.Load();
 
-            Children.Add(_leftArrow);
-            Children.Add(_rightArrow);
+            AddChild(_leftArrow);
+            AddChild(_rightArrow);
         }
 
         #endregion // Init

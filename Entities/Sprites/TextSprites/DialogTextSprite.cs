@@ -20,16 +20,7 @@ namespace SmallGalaxy_Engine.Sprites
 
         #region Properties
         
-        public new string Text
-        {
-            get { return base.Text; }
-            set
-            {
-                base.Text = value.Trim();
-                InvalidateMeasure();
-                TextChanged();
-            }
-        }
+        public new string Text { get { return base.Text; } set { SetText(value.Trim()); } }
 
         public float MaxWidth
         {

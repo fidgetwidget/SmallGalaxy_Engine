@@ -13,14 +13,15 @@ namespace SmallGalaxy_Engine.Entities
 
         #region Fields
 
-        private string _name;
+        protected string _name;
+        protected Entity _parent;
+        private List<Entity> _children;
 
-        private Transform _transform = new Transform(Vector2.Zero, 0f, Vector2.One);
+        protected Transform _transform = new Transform(Vector2.Zero, 0f, Vector2.One); // not all entities need rotation or scale, but they are cheap
 
         private bool _isInitialized = false;
         private bool _isLoaded = false;
         private bool _isVisible = true;
-        private bool _isHidden = false;
 
         #endregion // Fields
 
@@ -28,11 +29,14 @@ namespace SmallGalaxy_Engine.Entities
         #region Properties
 
         public string Name { get { return _name; } set { _name = value; } }
+        protected int childCount { get { return _children.Count; } }
 
         public Vector2 Position { get { return _transform.position; } set { SetPosition(value.X, value.Y); } }
         public float X { get { return _transform.x; } set { SetPosition(value, _transform.y); } }
         public float Y { get { return _transform.y; } set { SetPosition(_transform.x, value); } }
+
         public float Rotation { get { return _transform.rotation; } set { SetRotation(value); } }
+
         public Vector2 Scale { get { return _transform.scale; } set { SetScale(value.X, value.Y); } }
         public float ScaleX { get { return _transform.scaleX; } set { SetScale(value, _transform.scaleY); } }
         public float ScaleY { get { return _transform.scaleY; } set { SetScale(_transform.scaleX, value); } }
@@ -43,8 +47,7 @@ namespace SmallGalaxy_Engine.Entities
 
         public bool IsInitialized { get { return _isInitialized; } }
         public bool IsLoaded { get { return _isLoaded; } }
-        public bool IsVisible { get { return _isHidden ? false : _isVisible; } set { _isVisible = value; } }
-        public bool IsHidden { get { return _isHidden; } set { _isHidden = value; } } 
+        public bool IsVisible { get { return _isVisible; } set { _isVisible = value; } }
 
         #endregion // Properties
 
@@ -103,22 +106,57 @@ namespace SmallGalaxy_Engine.Entities
             if (!IsInitialized) { throw new InvalidOperationException("entity not yet initialized, cannot be drawn");  }
             if (!IsVisible) { return; }
 
-            DrawCore(batch);
+            Matrix identity = Matrix.Identity;
+
+            Draw(batch, ref identity);
         }
-        protected virtual void DrawCore(SpriteBatch batch) { }
+        public virtual void Draw(SpriteBatch batch, ref Matrix parent)
+        {
+            if (!IsInitialized) { throw new InvalidOperationException("entity not yet initialized, cannot be drawn"); }
+            if (!IsVisible) { return; }
+
+            Matrix local, global;
+            local = _transform.GetTransform();
+            Matrix.Multiply(ref local, ref parent, out global);
+
+            DrawCore(batch, ref global);
+
+            if (_children == null) { return; }
+
+            foreach (Entity child in _children)
+            {
+                child.Draw(batch, ref global);
+            }
+        }
+        protected virtual void DrawCore(SpriteBatch batch, ref Matrix global) { }
 
         #endregion // Draw
 
 
         #region Methods
 
-        public Matrix GetTransform() { return _transform.GetTransform(); }
-        public void SetTransform(Matrix transform) { _transform.SetTransform(transform); }
+        public void AddChild(Entity e)
+        {
+            e._parent = this;
+            _children.Add(e);
+        }
+        public void RemoveChild(Entity e)
+        {
+            e._parent = null;
+            _children.Remove(e);
+        }        
 
         protected virtual Vector2 GetWorldPosition()
         {
-            return Position;
+            if (_parent != null)
+                return Position + _parent.WorldPosition;
+            else
+                return Position;  
         }
+
+        #region Transform
+        public Matrix GetTransform() { return _transform.GetTransform(); }
+        public void SetTransform(Matrix transform) { _transform.SetTransform(transform); }
 
         public Vector2 GetPosition() { return _transform.position; }
         public virtual void SetPosition(float x, float y)
@@ -139,6 +177,7 @@ namespace SmallGalaxy_Engine.Entities
             _transform.scaleX = x;
             _transform.scaleY = y;
         }
+        #endregion // Transform
 
         public override string ToString()
         {
