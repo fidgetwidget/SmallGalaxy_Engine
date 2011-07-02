@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 using SmallGalaxy_Engine.Animations;
+using SmallGalaxy_Engine.Entities;
 using SmallGalaxy_Engine.Graphics;
 using SmallGalaxy_Engine.Sprites;
 
@@ -15,7 +16,7 @@ namespace SmallGalaxy_Engine.Puppet
 
     // The Puppet is basically a Sprite with a collection of FrameSprite Children 
     // using Keyframe animations instead of the more linear animations of the Sprite Class
-    public class Puppet : FrameSprite
+    public class Puppet : Entity
     {
 
         #region Fields
@@ -35,7 +36,10 @@ namespace SmallGalaxy_Engine.Puppet
         #region Init
 
         public Puppet(string name)
-            : base(name) { }
+            : base() 
+        {
+            _name = name;
+        }
 
         #endregion // Init
 

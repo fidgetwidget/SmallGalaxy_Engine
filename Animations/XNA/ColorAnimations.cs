@@ -13,4 +13,15 @@ namespace SmallGalaxy_Engine.Animations
             return Color.Lerp(from, to, progress);
         }
     }
+
+    public class ColorKeyframeAnimation : KeyframeAnimation<Color>
+    {
+        public ColorKeyframeAnimation(ClockManager manager) :
+            base(manager) { }
+
+        protected override Color Lerp(Color from, Color to, float progress)
+        {
+            return Color.Lerp(from, to, progress);
+        }
+    }
 }

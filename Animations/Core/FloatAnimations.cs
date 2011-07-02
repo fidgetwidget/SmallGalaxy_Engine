@@ -12,4 +12,15 @@ namespace SmallGalaxy_Engine.Animations
             return from + (to - from) * progress;
         }
     }
+
+    public class FloatKeyframeAnimation : KeyframeAnimation<float>
+    {
+        public FloatKeyframeAnimation(ClockManager manager) :
+            base(manager) { }
+
+        protected override float Lerp(float from, float to, float progress)
+        {
+            return from + (to - from) * progress;
+        }
+    }
 }

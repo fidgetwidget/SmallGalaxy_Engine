@@ -97,9 +97,10 @@
     <Compile Include="Animations\Core\FloatAnimations.cs" />
     <Compile Include="Animations\Core\IntAnimations.cs" />
     <Compile Include="Animations\Core\StringAnimations.cs" />
-    <Compile Include="Animations\KeyFrames\Keyframe.cs" />
-    <Compile Include="Animations\KeyFrames\KeyframeAnimation.cs" />
+    <Compile Include="Animations\FromToAnimation.cs" />
+    <Compile Include="Animations\KeyframeAnimation.cs" />
     <Compile Include="Animations\ProgressTransforms.cs" />
+    <Compile Include="Animations\SmallGalaxy\TransformAnimations.cs" />
     <Compile Include="Animations\XNA\ColorAnimations.cs" />
     <Compile Include="Animations\XNA\RectangleAnimations.cs" />
     <Compile Include="Animations\XNA\Vector2Animations.cs" />
@@ -122,8 +123,8 @@
     <Compile Include="Primitives\ShapeBatch.cs" />
     <Compile Include="Primitives\Verticies.cs" />
     <Compile Include="Entities\Puppet\Puppet.cs" />
-    <Compile Include="Animations\Sprite\FrameAnimation.cs" />
-    <Compile Include="Animations\Sprite\FrameAnimationManager.cs" />
+    <Compile Include="Animations\SmallGalaxy\FrameAnimation.cs" />
+    <Compile Include="Animations\FrameAnimationManager.cs" />
     <Compile Include="Entities\Puppet\PuppetPart.cs" />
     <Compile Include="Graphics\Frame\FrameSet.cs" />
     <Compile Include="Scenes\Editor\EditorScene.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Debug\TimeRuler.cs" />
     <Compile Include="Scenes\MenuScene\MenuEntry.cs" />
     <Compile Include="Scenes\MenuScene\MenuEntryValues.cs" />
-    <Compile Include="Animations\Sprite\TextSpriteAnimationManager.cs" />
+    <Compile Include="Animations\TextSpriteAnimationManager.cs" />
     <Compile Include="Entities\Sprites\TextSprites\DialogTextSprite.cs" />
     <Compile Include="Entities\Sprites\TextSprites\NumericTextSprite.cs" />
     <Compile Include="Graphics\Frame\Frame.cs" />
@@ -161,7 +162,7 @@
     <Compile Include="Graphics\TextureManager.cs" />
     <Compile Include="Scenes\LoadingScreen.cs" />
     <Compile Include="Scenes\MenuScene\MenuScene.cs" />
-    <Compile Include="Common\Clock.cs" />
+    <Compile Include="Animations\Clock.cs" />
     <Compile Include="Common\RandomMath.cs" />
     <Compile Include="Graphics\SafeArea.cs" />
     <Compile Include="Common\StringBuilderExtensions.cs" />

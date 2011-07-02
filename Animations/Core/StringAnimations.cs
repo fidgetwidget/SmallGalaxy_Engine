@@ -14,6 +14,7 @@ namespace SmallGalaxy_Engine.Animations
 
         #endregion // Fields
 
+
         #region Properties
 
         public string StringToAppendTo { get { return _toAppendTo; } set { _toAppendTo = value; } }

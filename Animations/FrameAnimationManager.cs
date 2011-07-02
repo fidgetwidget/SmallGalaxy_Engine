@@ -20,6 +20,7 @@ namespace SmallGalaxy_Engine.Animations
 
         #endregion // Fields
 
+
         #region Properties
 
         public FrameAnimation CurrentAnimation { get { return _currentAnimation; } }

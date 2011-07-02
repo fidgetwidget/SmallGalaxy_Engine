@@ -137,11 +137,13 @@ namespace SmallGalaxy_Engine.Entities
 
         public void AddChild(Entity e)
         {
+            if (_children == null) { _children = new List<Entity>(); }
             e._parent = this;
             _children.Add(e);
         }
         public void RemoveChild(Entity e)
         {
+            if (_children == null) { return; }
             e._parent = null;
             _children.Remove(e);
         }        

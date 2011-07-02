@@ -10,6 +10,7 @@ namespace SmallGalaxy_Engine.Animations
 
     public class TextSpriteAnimationManager
     {
+
         #region Fields
 
         protected TextSprite TextSprite;
@@ -18,6 +19,7 @@ namespace SmallGalaxy_Engine.Animations
         public StringWriterAnimation StringWriterAnimation;
 
         #endregion // Fields
+
 
         #region Init
 

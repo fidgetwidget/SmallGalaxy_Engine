@@ -19,7 +19,9 @@ namespace SmallGalaxy_Engine.Puppet
 
         protected int _id;
         protected Puppet _puppet; // the parent
-        protected KeyframesAnimation _animation;
+        protected TransformKeyframeAnimation _tAnimation;
+        protected ColorKeyframeAnimation _cAnimation;
+        protected Vector2KeyframeAnimation _oAnimation;
 
         public PuppetPart(int id, string name, Puppet puppet)
             : this(id, name, null, puppet) { }
@@ -28,29 +30,26 @@ namespace SmallGalaxy_Engine.Puppet
         {
             _id = id;
             _puppet = puppet;
-            _animation = new KeyframesAnimation(puppet.AnimManager);
-            _animation.Apply = (v) =>
-            {
-                Position = v.Position;
-                Rotation = v.Rotation;
-                Scale = v.Scale;
-                Origin = v.Origin;
-                Tint = v.Tint;
-            };
+            _tAnimation = new TransformKeyframeAnimation(puppet.AnimManager);
+            _tAnimation.Apply = (v) =>
+                {
+                    SetPosition(v.x, v.y);
+                    SetRotation(v.rotation);
+                    SetScale(v.scaleX, v.scaleY);
+                };
+
+            _cAnimation = new ColorKeyframeAnimation(puppet.AnimManager);
+            _cAnimation.Apply = (v) => { SetTint(v); };
+
+            _oAnimation = new Vector2KeyframeAnimation(puppet.AnimManager);
+            _oAnimation.Apply = (v) => { Origin = v; };
         }
 
         public void AddKeyframe(int index)
         {
-            _animation.SaveKeyframe(
-                new Keyframe()
-                {
-                    Index = index,
-                    Position = Position,
-                    Rotation = Rotation,
-                    Scale = Scale,
-                    Origin = Origin,
-                    Tint = Tint,
-                });
+            _tAnimation.SetKeyframe(index, this._transform);
+            _cAnimation.SetKeyframe(index, this.Tint);
+            _oAnimation.SetKeyframe(index, this.Origin);
         }
 
     }

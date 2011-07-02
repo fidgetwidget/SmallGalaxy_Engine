@@ -101,6 +101,5 @@ namespace SmallGalaxy_Engine.Animations
 
         #endregion // Methods
 
-
     }
 }

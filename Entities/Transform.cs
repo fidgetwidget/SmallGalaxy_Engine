@@ -25,5 +25,13 @@ namespace SmallGalaxy_Engine.Entities
 
         public Matrix GetTransform() { return MatrixHelper.GetTransformMatrix(ref position, ref rotation, ref scale); }
         public void SetTransform(Matrix transform) { MatrixHelper.DecomposeMatrix(ref transform, out position, out rotation, out scale); }
+
+        public static Transform Lerp(Transform from, Transform to, float amount)
+        {
+            return new Transform(
+                Vector2.Lerp(from.position, to.position, amount),
+                from.rotation + (to.rotation - from.rotation) * amount,
+                Vector2.Lerp(from.scale, to.scale, amount));
+        }
     }
 }
