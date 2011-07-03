@@ -40,6 +40,14 @@ namespace SmallGalaxy_Engine.Primitives
             }
         }
 
+        public void Transform(Matrix transform)
+        {
+            Vector2[] transformed = new Vector2[Length];
+            Vector2.Transform(verticies.ToArray(), ref transform, transformed);
+            verticies.Clear();
+            verticies.InsertRange(0, transformed);
+        }
+
         public void Clear()
         {
             if (verticies == null) { return; }

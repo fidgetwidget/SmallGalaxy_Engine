@@ -147,7 +147,7 @@ namespace SmallGalaxy_Engine.Primitives
         }
         protected void TransformVertices(Matrix transform)
         {
-            Vector2.Transform(_vertices.Vertices.ToArray(), ref transform, _vertices.TransformedVertices.ToArray());
+            _vertices.Transform(transform);
         }
 
         public override void SetPosition(float x, float y)

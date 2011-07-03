@@ -14,10 +14,7 @@ namespace SmallGalaxy_Engine.Primitives
         #region Fields
 
         private Verticies _verticies;
-        private Verticies _transformedVertices;
-        private Texture2D _texture;
-
-        private bool _isLoaded = false;
+        private Verticies _transformedVerticies;
 
         #endregion // Fields
 
@@ -32,9 +29,7 @@ namespace SmallGalaxy_Engine.Primitives
         /// <summary>
         /// The transformed points, typically in "world" space
         /// </summary>        
-        public Verticies TransformedVertices { get { return _transformedVertices; } }
-
-        public bool IsLoaded { get { return _isLoaded; } }
+        public Verticies TransformedVertices { get { return _transformedVerticies; } }
 
         #endregion // Properties
 
@@ -48,21 +43,12 @@ namespace SmallGalaxy_Engine.Primitives
         public Polygon(Verticies verticies)
         {
             _verticies = verticies;
-            _transformedVertices = (Verticies)verticies.Clone();
+            _transformedVerticies = (Verticies)verticies.Clone();
         }
         public Polygon(Vector2[] verticies)
         {
             _verticies = new Verticies(verticies);
-            _transformedVertices = new Verticies(verticies);
-        }
-
-        public void Load(GraphicsDevice graphics)
-        {
-            if (_isLoaded) { return; }
-            _texture = new Texture2D(graphics, 1, 1);
-            Color[] whitePixels = new Color[] { Color.White };
-            _texture.SetData<Color>(whitePixels);
-            _isLoaded = true;
+            _transformedVerticies = new Verticies(verticies);
         }
 
         #endregion // Init
@@ -70,17 +56,17 @@ namespace SmallGalaxy_Engine.Primitives
 
         #region Methods
 
-        public void Insert(int index, Vector2 point)
+        public void Transform(Verticies value)
         {
-            _verticies.Insert(index, point);
+            _transformedVerticies = value;
         }
-        public void Insert(int index, LineSegment segment)
+
+        public void Transform(Matrix transform)
         {
-            _verticies.Insert(index, segment);
-        }
-        public void Insert(int index, Verticies list)
-        {
-            _verticies.Insert(index, list);
+            Vector2[] transformed = new Vector2[_verticies.Length];
+            Vector2.Transform(_verticies.ToArray(), ref transform, transformed);
+            _transformedVerticies.Clear();
+            _transformedVerticies.verticies.InsertRange(0, transformed);
         }
 
         #endregion // Methods

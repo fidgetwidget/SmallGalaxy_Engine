@@ -105,6 +105,11 @@
     <Compile Include="Animations\XNA\RectangleAnimations.cs" />
     <Compile Include="Animations\XNA\Vector2Animations.cs" />
     <Compile Include="Colliders\AABB.cs" />
+    <Compile Include="Colliders\CircleCollider.cs" />
+    <Compile Include="Colliders\Collider.cs" />
+    <Compile Include="Colliders\CollisionData.cs" />
+    <Compile Include="Colliders\PolygonCollider.cs" />
+    <Compile Include="Colliders\RectangleCollider.cs" />
     <Compile Include="Common\Camera2D.cs" />
     <Compile Include="Debug\SafeAreaDisplay.cs" />
     <Compile Include="Debug\SceneManagerUtils.cs" />
@@ -113,7 +118,8 @@
     <Compile Include="Debug\DebugSystem.cs" />
     <Compile Include="Debug\FpsCounter.cs" />
     <Compile Include="Debug\IDebugCommandHost.cs" />
-    <Compile Include="Entities\Interfaces\Interfaces.cs" />
+    <Compile Include="Entities\Actors\Actor.cs" />
+    <Compile Include="Entities\Interfaces.cs" />
     <Compile Include="Entities\Transform.cs" />
     <Compile Include="Graphics\Lighting\IShadowCaster.cs" />
     <Compile Include="Graphics\Lighting\LightMap.cs" />
@@ -168,10 +174,7 @@
     <Compile Include="Common\StringBuilderExtensions.cs" />
     <Compile Include="Common\Timer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scenes\Dialog\" />
-    <Folder Include="Utils\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--
