@@ -13,8 +13,8 @@ namespace SmallGalaxy_Engine.Primitives
 
         #region Fields
 
-        private Verticies _verticies;
-        private Verticies _transformedVerticies;
+        private Vertices _vertices;
+        private Vertices _transformedvertices;
 
         #endregion // Fields
 
@@ -24,12 +24,12 @@ namespace SmallGalaxy_Engine.Primitives
         /// <summary>
         /// The raw set of points, in "model space".
         /// </summary>        
-        public Verticies Vertices { get { return _verticies; } }
+        public Vertices Vertices { get { return _vertices; } }
 
         /// <summary>
         /// The transformed points, typically in "world" space
         /// </summary>        
-        public Verticies TransformedVertices { get { return _transformedVerticies; } }
+        public Vertices TransformedVertices { get { return _transformedvertices; } }
 
         #endregion // Properties
 
@@ -39,16 +39,16 @@ namespace SmallGalaxy_Engine.Primitives
         /// <summary>
         /// Constructs a new VectorPolygon object from the given points.
         /// </summary>
-        /// <param name="verticies">The raw set of points.</param>
-        public Polygon(Verticies verticies)
+        /// <param name="vertices">The raw set of points.</param>
+        public Polygon(Vertices vertices)
         {
-            _verticies = verticies;
-            _transformedVerticies = (Verticies)verticies.Clone();
+            _vertices = vertices;
+            _transformedvertices = (Vertices)vertices.Clone();
         }
-        public Polygon(Vector2[] verticies)
+        public Polygon(Vector2[] vertices)
         {
-            _verticies = new Verticies(verticies);
-            _transformedVerticies = new Verticies(verticies);
+            _vertices = new Vertices(vertices);
+            _transformedvertices = new Vertices(vertices);
         }
 
         #endregion // Init
@@ -56,17 +56,17 @@ namespace SmallGalaxy_Engine.Primitives
 
         #region Methods
 
-        public void Transform(Verticies value)
+        public void Transform(Vertices value)
         {
-            _transformedVerticies = value;
+            _transformedvertices = value;
         }
 
         public void Transform(Matrix transform)
         {
-            Vector2[] transformed = new Vector2[_verticies.Length];
-            Vector2.Transform(_verticies.ToArray(), ref transform, transformed);
-            _transformedVerticies.Clear();
-            _transformedVerticies.verticies.InsertRange(0, transformed);
+            Vector2[] transformed = new Vector2[_vertices.Length];
+            Vector2.Transform(_vertices.ToArray(), ref transform, transformed);
+            _transformedvertices.Clear();
+            _transformedvertices.vertices.InsertRange(0, transformed);
         }
 
         #endregion // Methods

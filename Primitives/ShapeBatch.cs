@@ -38,14 +38,14 @@ namespace SmallGalaxy_Engine.Primitives
         }
         public void DrawShape(Shape shape, Color color, float thickness)
         {
-            if (shape.Verticies.verticies == null) { return; }
+            if (shape.vertices.vertices == null) { return; }
             Vector2 v1, v2, position, origin, scale;
             float distance, angle;
 
-            for (int i = shape.Verticies.Length - 1; i >= 1; --i)
+            for (int i = shape.vertices.Length - 1; i >= 1; --i)
             {
-                v1 = shape.Verticies[i - 1];
-                v2 = shape.Verticies[i];
+                v1 = shape.vertices[i - 1];
+                v2 = shape.vertices[i];
                 distance = Vector2.Distance(v1, v2);
                 angle = (float)Math.Atan2((double)(v2.Y - v1.Y),
                                            (double)(v2.X - v1.X));

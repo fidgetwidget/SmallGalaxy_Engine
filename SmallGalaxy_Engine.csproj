@@ -127,7 +127,7 @@
     <Compile Include="Primitives\Path\Path.cs" />
     <Compile Include="Common\MatrixHelper.cs" />
     <Compile Include="Primitives\ShapeBatch.cs" />
-    <Compile Include="Primitives\Verticies.cs" />
+    <Compile Include="Primitives\Vertices.cs" />
     <Compile Include="Entities\Puppet\Puppet.cs" />
     <Compile Include="Animations\SmallGalaxy\FrameAnimation.cs" />
     <Compile Include="Animations\FrameAnimationManager.cs" />

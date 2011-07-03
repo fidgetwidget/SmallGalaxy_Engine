@@ -78,7 +78,7 @@ namespace SmallGalaxy_Engine.Primitives
             get { return new Vector2(_halfWidth, _radius); }
         }
 
-        public Verticies Vertices { get { return _vertices.TransformedVertices; } }
+        public Vertices Vertices { get { return _vertices.TransformedVertices; } }
 
         #endregion // Properties
 

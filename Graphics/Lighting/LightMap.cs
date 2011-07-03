@@ -40,7 +40,7 @@ namespace SmallGalaxy_Engine.Lighting
 
         public void DrawLight(Vector2 position, float lightRange, Color color)
         {
-            Verticies cEdges = Shape.CreateCircle(position, lightRange, 32).Verticies;
+            Vertices cEdges = Shape.CreateCircle(position, lightRange, 32).vertices;
             for (int i = 0; i < 32; i++)
             {
                 _pBatch.AddVertex(position, color);
@@ -62,13 +62,13 @@ namespace SmallGalaxy_Engine.Lighting
         public void DrawShadows(IShadowCaster sc, Vector2 light, float lightRange, float penetration, Color color)
         {
             if (!sc.HasEdges()) { return; }
-            Verticies verticies = sc.GetEdges();
+            Vertices vertices = sc.GetEdges();
 
-            for (int i = 0; i < verticies.Length - 1; i += 2)
+            for (int i = 0; i < vertices.Length - 1; i += 2)
             {
                 Vector2 start, end;
-                start = verticies[i];
-                end = verticies[i + 1];
+                start = vertices[i];
+                end = vertices[i + 1];
                 if (penetration != 0)
                 {
                     start = new Line(light, Vector2.Distance(light, start) + penetration, start).End;

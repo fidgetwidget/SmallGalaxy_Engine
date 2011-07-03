@@ -197,13 +197,13 @@ namespace SmallGalaxy_Engine.Primitives
             AddVertex(bl, color);
             AddVertex(tl, color);
         }
-        public void AddPolygon(Verticies verticies, Color color)
+        public void AddPolygon(Vertices vertices, Color color)
         {
             for (int i = 0; i < _vertices.Length; i++)
             {
-                if (i == 0) { AddVertex(verticies[verticies.Length - 1], color); }
-                else { AddVertex(verticies[i - 1], color); }
-                AddVertex(verticies[i], color);
+                if (i == 0) { AddVertex(vertices[vertices.Length - 1], color); }
+                else { AddVertex(vertices[i - 1], color); }
+                AddVertex(vertices[i], color);
             }
         }
 

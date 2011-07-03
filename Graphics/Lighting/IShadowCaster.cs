@@ -7,6 +7,6 @@ namespace SmallGalaxy_Engine.Lighting
     public interface IShadowCaster
     {
         bool HasEdges();
-        Verticies GetEdges();
+        Vertices GetEdges();
     }
 }
