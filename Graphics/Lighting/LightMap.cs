@@ -71,8 +71,14 @@ namespace SmallGalaxy_Engine.Lighting
                 end = vertices[i + 1];
                 if (penetration != 0)
                 {
-                    start = new Line(light, Vector2.Distance(light, start) + penetration, start).End;
-                    end = new Line(light, Vector2.Distance(light, end) + penetration, end).End;
+                    start = LineHelper.RotateAboutOrigin(
+                        light + new Vector2(0, -(Vector2.Distance(light, start) + penetration)), 
+                        light,
+                        LineHelper.AngleBetween(light, start));
+                    end = LineHelper.RotateAboutOrigin(
+                        light + new Vector2(0, -(Vector2.Distance(light, end) + penetration)),
+                        light,
+                        LineHelper.AngleBetween(light, end));
                 }
 
                 if (DoesEdgeCastShadow(start, end, light))

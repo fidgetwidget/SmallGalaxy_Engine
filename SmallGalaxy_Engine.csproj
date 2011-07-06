@@ -109,8 +109,10 @@
     <Compile Include="Colliders\Collider.cs" />
     <Compile Include="Colliders\CollisionData.cs" />
     <Compile Include="Colliders\PolygonCollider.cs" />
+    <Compile Include="Colliders\RayCasting.cs" />
     <Compile Include="Colliders\RectangleCollider.cs" />
     <Compile Include="Common\Camera2D.cs" />
+    <Compile Include="Common\LineHelper.cs" />
     <Compile Include="Debug\SafeAreaDisplay.cs" />
     <Compile Include="Debug\SceneManagerUtils.cs" />
     <Compile Include="Debug\DebugCommandUI.cs" />

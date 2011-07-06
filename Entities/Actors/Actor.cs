@@ -42,10 +42,8 @@ namespace SmallGalaxy_Engine.Entities
             _isOnWall, _wasOnWall,
             _isJumping, _wasJumping, _isWallJumping;
 
-        protected bool _canSprint = false;
         protected bool _canWallJump = false;
         protected bool _canWallSlide = false;
-        protected bool _canCrawl = false;
 
         #endregion // Fields
 
@@ -85,8 +83,9 @@ namespace SmallGalaxy_Engine.Entities
 
         public override void Update(float elapsedTime)
         {
-            _animations.Update(elapsedTime);            
+            _animations.Update(elapsedTime);
 
+            HandleInput(elapsedTime);
             HandleMovement(elapsedTime);
             HandlePhysics(elapsedTime);
 
@@ -97,6 +96,9 @@ namespace SmallGalaxy_Engine.Entities
         }
 
         protected virtual void UpdateAnimation() { }
+
+        // For not Movement Input
+        protected virtual void HandleInput(float elapsedTime) { }
 
         // AI or Input Driven Jumping, Running & Climbing
         protected virtual void HandleMovement(float elapsedTime) { }

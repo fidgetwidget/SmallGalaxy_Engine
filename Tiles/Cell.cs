@@ -164,7 +164,8 @@ namespace SmallGalaxy_Engine
             if (EntityAddedEvent != null) { EntityAddedEvent(this, EventArgs.Empty); }
         }
         public void RemoveEntity()
-        {            
+        {
+            if (_entity == null) { return; }
             _entity.SetCoord(-1, -1);
             _entity = null;
 

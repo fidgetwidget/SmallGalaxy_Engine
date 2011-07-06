@@ -9,11 +9,16 @@ namespace SmallGalaxy_Engine.Colliders
     public struct AABB
     {
 
-        public Vector2 upperBound;
         public Vector2 lowerBound;
+        public Vector2 upperBound;        
 
         #region Properties
-        
+
+        public float Left { get { return lowerBound.X; } }
+        public float Right { get { return upperBound.X; } }
+        public float Top { get { return lowerBound.Y; } }
+        public float Bottom { get { return upperBound.Y; } }
+
         public Vector2 Center { get { return 0.5f * (upperBound + lowerBound); } }
         
         public Vector2 Extents { get { return 0.5f * (upperBound - lowerBound); } }
@@ -22,7 +27,21 @@ namespace SmallGalaxy_Engine.Colliders
 
         #region Init
 
-        public AABB(float x, float y, int width, int height)
+        public AABB(Vector2 lowerBounds, Vector2 upperBounds)
+        {
+            lowerBound = lowerBounds;
+            upperBound = upperBounds;
+        }
+
+        public AABB(Rectangle rect)
+        {
+            lowerBound.X = rect.X;
+            lowerBound.Y = rect.Y;
+            upperBound.X = rect.X + rect.Width;
+            upperBound.Y = rect.Y + rect.Height;
+        }
+
+        public AABB(float x, float y, float width, float height)
         {
             lowerBound.X = x;
             lowerBound.Y = y;
@@ -30,7 +49,7 @@ namespace SmallGalaxy_Engine.Colliders
             upperBound.Y = lowerBound.Y + height;
         }
         
-        public AABB(Vector2 position, int width, int height)
+        public AABB(Vector2 position, float width, float height)
         {
             lowerBound.X = position.X;
             lowerBound.Y = position.Y;
@@ -38,12 +57,7 @@ namespace SmallGalaxy_Engine.Colliders
             upperBound.Y = lowerBound.Y + height;
         }
 
-        public AABB(Vector2 lowerBounds, Vector2 upperBounds)
-        {
-            lowerBound = lowerBounds;
-            upperBound = upperBounds;
-        }
-
+        
         #endregion // Init
 
         #region Methods
@@ -81,6 +95,16 @@ namespace SmallGalaxy_Engine.Colliders
             lowerBound = Vector2.Max(lowerBound, aabb.lowerBound);
         }
 
+        public Rectangle ToRectangle()
+        {
+            int x, y, width, height;
+            x = (int)lowerBound.X;
+            y = (int)lowerBound.Y;
+            width = (int)(upperBound.X - lowerBound.X);
+            height = (int)(upperBound.Y - lowerBound.Y);
+
+            return new Rectangle(x, y, width, height);
+        }
         public override string ToString()
         {
             return string.Format("lowerBound:{0} upperBound:{1}", lowerBound, upperBound);
