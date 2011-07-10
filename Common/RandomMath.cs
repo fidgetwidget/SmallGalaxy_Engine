@@ -125,27 +125,29 @@ namespace SmallGalaxy_Engine
     public static class PerlinNoise
     {
         // Deligate Methods to allow anyone to create and use different noise and noise Interpolation Methods
-        public static delegate float NoiseFunction1D(int x, int? seed);
-        public static delegate float NoiseFunction2D(int x, int y, int? seed);
-        public static delegate float NoiseInterpolation(float a, float b, float x);
+        public delegate float NoiseFunction1D(int x, int? seed);
+        public delegate float NoiseFunction2D(int x, int y, int? seed);
+        public delegate float NoiseInterpolation(float a, float b, float x);
     
         // Generates a 1D Noise Map using persistance, octaves, frequency and amplitude
-        public static float[] GenerateNoise(int width, int? seed, // a null seed uses a randomly generated seed
-            float persistance, int octaves, float frequency, float amplitude)
+        public static float[] GenerateNoise(int width,
+            float persistance, int octaves, float frequency, float amplitude,
+            int? seed = null) // a null seed uses a randomly generated seed
         {
             float[] noise = new float[width];
             if (!seed.HasValue) { seed = RandomMath.GenerateRandomSeed(); }
 
             for (int x = 0; x < width; ++x)
             {
-                noise[x] = PerlinNoise(x, persistance, octaves, frequency, amplitude, seed);
+                noise[x] = PerlinNoise1D(x, persistance, octaves, frequency, amplitude, seed);
             }
             return noise;
         }
 
         // Generates a 2D Noise Map using persistance, octaves, frequency and amplitude
-        public static float[,] GenerateNoise(int width, int height, int? seed, // a null seed uses a randomly generated seed
-            float persistance, int octaves, float frequency, float amplitude)
+        public static float[,] GenerateNoise(int width, int height, 
+            float persistance, int octaves, float frequency, float amplitude,
+            int? seed = null) // a null seed uses a randomly generated seed
         {
             float[,] noise = new float[width, height];
             if (!seed.HasValue) { seed = RandomMath.GenerateRandomSeed(); }
@@ -154,14 +156,15 @@ namespace SmallGalaxy_Engine
             {
                 for (int y = 0; y < height; ++y)
                 {
-                    noise[x, y] = PerlinNoise(x, y, persistance, octaves, frequency, amplitude, seed);
+                    noise[x, y] = PerlinNoise2D(x, y, persistance, octaves, frequency, amplitude, seed);
                 }
             }
             return noise;
         }
 
         // Returns the Interpolated 1D Noise Value using given x, persistance, octaves, frequency, and amplitude
-        private static float PerlinNoise(int x, float persistance, int octaves, float frequency, float amplitude,
+        private static float PerlinNoise1D(int x, 
+            float persistance, int octaves, float frequency, float amplitude,
             int? seed = null)
         {
             float total = 0;
@@ -180,7 +183,8 @@ namespace SmallGalaxy_Engine
         }
 
         // Returns the Interpolated 2D Noise Value using given x|y, persistance, octaves, frequency, and amplitude 
-        private static float PerlinNoise(int x, int y, float persistance, int octaves, float frequency, float amplitude,
+        private static float PerlinNoise2D(int x, int y, 
+            float persistance, int octaves, float frequency, float amplitude,
             int? seed = null)
         {
             float total = 0;
