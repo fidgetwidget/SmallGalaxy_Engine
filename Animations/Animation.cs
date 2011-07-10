@@ -57,7 +57,7 @@ namespace SmallGalaxy_Engine.Animations
             }
         }
 
-        protected abstract T GetCurrentValue(float progress);
+        protected abstract T GetCurrentValue(float progress);        
 
         #endregion // Methods
 

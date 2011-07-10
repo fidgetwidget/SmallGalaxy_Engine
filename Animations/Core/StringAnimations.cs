@@ -59,7 +59,7 @@ namespace SmallGalaxy_Engine.Animations
 
         protected override string GetCurrentValue(float progress)
         {
-            return _toAppendTo + _toWrite.Substring(0, (int)((float)_toWrite.Length * progress));
+            return _toAppendTo + _toWrite.Substring(0, (int)(_toWrite.Length * progress));
         }
 
         #endregion // Methods

@@ -81,6 +81,8 @@ namespace SmallGalaxy_Engine.Animations
             return Lerp(_keyframes[prev], _keyframes[next], amount);
         }
 
+        protected abstract T Lerp(T from, T to, float progress);
+
         public void AddKeyframe(int index, T value)
         {
             if (_keyframes.ContainsKey(index)) { throw new ArgumentException(string.Format("Keyframe at Index {0} already exists", index)); }
@@ -95,9 +97,7 @@ namespace SmallGalaxy_Engine.Animations
         {
             if (!_keyframes.ContainsKey(index)) { throw new ArgumentException(string.Format("There is no Keyframe at Index {0}", index)); }
             _keyframes.Remove(index);
-        }
-
-        protected abstract T Lerp(T from, T to, float progress);
+        }        
 
         #endregion // Methods
 
