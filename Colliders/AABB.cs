@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using SmallGalaxy_Engine.Entities;
+using SmallGalaxy_Engine.Primitives;
 
 namespace SmallGalaxy_Engine.Colliders
 {
@@ -61,9 +62,13 @@ namespace SmallGalaxy_Engine.Colliders
         #endregion // Init
 
         #region Methods
-        
-        // Does it overlap with the other
-        public bool Overlap(AABB aabb)
+
+        public bool Intersects(Vector2 point)
+        {
+            return AABB.IntersectsPoint(this, point);
+        }
+
+        public bool Intersects(AABB aabb)
         {
             Vector2 d1, d2;
             d1 = aabb.upperBound - lowerBound;
@@ -115,7 +120,7 @@ namespace SmallGalaxy_Engine.Colliders
         // STATIC 
         public static bool Overlap(AABB a, AABB b)
         {
-            return a.Overlap(b);
+            return a.Intersects(b);
         }
         public static Vector2 GetIntersectionDepth(AABB a, AABB b)
         {
@@ -153,6 +158,36 @@ namespace SmallGalaxy_Engine.Colliders
         public static AABB operator + (AABB bounds, Vector2 offset)
         {
             return offset + bounds;
+        }
+
+        // Does the Point Intersect with the AABB a
+        public static bool IntersectsPoint(AABB a, Vector2 point)
+        {
+            return (
+                point.X < a.Right  && point.X > a.Left && 
+                point.Y < a.Bottom && point.Y > a.Top);
+        }
+
+        // Does the Line (lineStart, lineEnd) Intersect with AABB a - returns the hitPoint (lineStart of lineEnd if the AABB contains it)
+        public static bool IntersectsLine(AABB a, Vector2 lineStart, Vector2 lineEnd, out Vector2 hitPoint, bool earlyExit = true)
+        {
+            if (earlyExit)
+            {
+                if (IntersectsPoint(a, lineStart)) { hitPoint = lineStart; return true; }
+                if (IntersectsPoint(a, lineEnd)) { hitPoint = lineEnd; return true; }
+            }
+
+            LineSegment te, re, be, le;
+            te = new LineSegment(new Vector2(a.Left, a.Top), new Vector2(a.Right, a.Top));
+            re = new LineSegment(new Vector2(a.Right, a.Top), new Vector2(a.Right, a.Bottom));
+            be = new LineSegment(new Vector2(a.Right, a.Bottom), new Vector2(a.Left, a.Bottom));
+            le = new LineSegment(new Vector2(a.Left, a.Bottom), new Vector2(a.Left, a.Top));
+
+            return (Collider.LinesIntersect(lineStart, lineEnd, te.start, te.end, out hitPoint) ||
+                Collider.LinesIntersect(lineStart, lineEnd, re.start, re.end, out hitPoint) ||
+                Collider.LinesIntersect(lineStart, lineEnd, be.start, be.end, out hitPoint) ||
+                Collider.LinesIntersect(lineStart, lineEnd, le.start, le.end, out hitPoint)); 
+
         }
 
     }

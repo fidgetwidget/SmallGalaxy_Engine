@@ -135,6 +135,7 @@
     <Compile Include="Animations\FrameAnimationManager.cs" />
     <Compile Include="Entities\Puppet\PuppetPart.cs" />
     <Compile Include="Graphics\Frame\FrameSet.cs" />
+    <Compile Include="Scenes\Editor\EditorPallet.cs" />
     <Compile Include="Scenes\Editor\EditorScene.cs" />
     <Compile Include="Input\KeyboardUtils.cs" />
     <Compile Include="Graphics\Layout.cs" />
