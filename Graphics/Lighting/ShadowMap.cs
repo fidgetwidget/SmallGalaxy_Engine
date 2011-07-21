@@ -7,26 +7,30 @@ using SmallGalaxy_Engine.Primitives;
 
 namespace SmallGalaxy_Engine.Lighting
 {
-    public class LightMap
+    
+    // The Shadow Map is used to generate a Render Target
+    // with all the shadows creted by light sources and Shadow Casters
+    // Helpful for generating LOS or when creating Lighting/Shadow Shader Effects
+    public class ShadowMap
     {
 
         private GraphicsDevice _device;
         private PrimitiveBatch _pBatch;
-        private RenderTarget2D _lightmap;
+        private RenderTarget2D _stencil;
 
-        public RenderTarget2D RenderTarget { get { return _lightmap; } }
+        public RenderTarget2D RenderTarget { get { return _stencil; } }
 
         public void Load(GraphicsDevice device)
         {
             _device = device;
             _pBatch = new PrimitiveBatch(device);
-            _lightmap = new RenderTarget2D(device, device.Viewport.Width, device.Viewport.Height);
+            _stencil = new RenderTarget2D(device, device.Viewport.Width, device.Viewport.Height);
         }
 
         public void Begin(ref Rectangle area, Color color) 
         {
             _device.RasterizerState = RasterizerState.CullNone;
-            _device.SetRenderTarget(_lightmap);
+            _device.SetRenderTarget(_stencil);
             _device.Clear(color);
             _pBatch.Projection = Matrix.CreateOrthographicOffCenter(
                 area.Left, area.Right, area.Bottom, area.Top, 0, 1);
@@ -93,10 +97,8 @@ namespace SmallGalaxy_Engine.Lighting
                 }
             }
         }
-
-        
        
-
+        
         private bool DoesEdgeCastShadow(Vector2 start, Vector2 end, Vector2 light)
         {
             Vector2 startToEnd = Vector2.Subtract(end, start);

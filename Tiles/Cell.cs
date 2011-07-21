@@ -28,7 +28,7 @@ namespace SmallGalaxy_Engine
         NorthEast = 2,
         East = 3,
         SouthEast = 4,
-        South = 5,        
+        South = 5,
         SouthWest = 6,
         West = 7,
         NumberOfDirections = 8,
@@ -72,29 +72,66 @@ namespace SmallGalaxy_Engine
     }
 
     #endregion // Tiles Helper Class
-       
 
-    public class Cell<T> where T : Entity, ITileable
+
+    public class Cell : ITileable<Cell>
     {
 
         #region Fields
 
-        private Map<T> _map;
-        private Point _coord; // grid coordinates
-        private T _entity; // The Tile data
+        private Map<Cell> _map;
+        private Point _coord;
 
         #endregion // Fields
 
-        #region Properties
 
-        public Map<T> Map { get { return _map; } protected internal set { _map = value; } }
+        #region Properties
 
         public Point Coord { get { return _coord; } protected internal set { _coord = value; } }
         public int Col { get { return _coord.X; } protected internal set { _coord.X = value; } }
         public int Row { get { return _coord.Y; } protected internal set { _coord.Y = value; } }
 
-        public int Width { get { return _map.Width; } }
-        public int Height { get { return _map.Height; } }
+        public int Width { get { return _map.CellWidth; } }
+        public int Height { get { return _map.CellHeight; } }
+
+        #endregion // Properties
+
+
+        #region Methods
+
+        public void SetMap(Map<Cell> map) { _map = map; }
+        public void SetCoord(int x, int y) { _coord.X = x; _coord.Y = y; }
+        public Point GetCoord() { return _coord; }
+
+        #endregion // Methods
+
+
+
+    }
+
+    // Generic Cell (of Entity)
+    public class Cell<T> : ITileable<Cell<T>> where T : Entity
+    {
+
+        #region Fields
+
+        private Map<Cell<T>> _map;
+        private Point _coord; // grid coordinates
+        private T _entity; // The Tile data
+
+        #endregion // Fields
+
+
+        #region Properties
+
+        public Map<Cell<T>> Map { get { return _map; } protected internal set { _map = value; } }
+
+        public Point Coord { get { return _coord; } protected internal set { _coord = value; } }
+        public int Col { get { return _coord.X; } protected internal set { _coord.X = value; } }
+        public int Row { get { return _coord.Y; } protected internal set { _coord.Y = value; } }
+
+        public int Width { get { return _map.CellWidth; } }
+        public int Height { get { return _map.CellHeight; } }
 
         public Vector2 Position { get { return GetPosition(); } }
         public float X { get { return GetPosition().X; } }
@@ -118,20 +155,26 @@ namespace SmallGalaxy_Engine
 
         #region Init
 
-        public Cell(Map<T> grid)
-        {
-            _map = grid;
-        }
-        public Cell(Map<T> grid, T entity)
-            : this(grid)
-        {
-            SetEntity(entity);
-        }
+        public Cell() { }
 
         #endregion // Init
 
 
         #region Methods
+
+        public void SetMap(Map<Cell<T>> map)
+        {
+            _map = map;
+        }
+        public void SetCoord(int x, int y)
+        {
+            _coord.X = x;
+            _coord.Y = y;
+        }
+        public Point GetCoord()
+        {
+            return _coord;
+        }
 
         public Vector2 GetPosition()
         {
@@ -155,18 +198,16 @@ namespace SmallGalaxy_Engine
         public void SetEntity(T entity)
         {
             if (_entity != null) { RemoveEntity(); }
-            if (entity != null) 
+            if (entity != null)
             {
                 _entity = entity;
                 _entity.SetPosition(X, Y);
-                _entity.SetCoord(_coord.X, _coord.Y);
-            }            
+            }
             if (EntityAddedEvent != null) { EntityAddedEvent(this, EventArgs.Empty); }
         }
         public void RemoveEntity()
         {
             if (_entity == null) { return; }
-            _entity.SetCoord(-1, -1);
             _entity = null;
 
             if (EntityRemovedEvent != null) { EntityRemovedEvent(this, EventArgs.Empty); }
@@ -178,7 +219,7 @@ namespace SmallGalaxy_Engine
         }
 
         #endregion // Methods
-        
+
 
         #region Operators
 
@@ -221,120 +262,6 @@ namespace SmallGalaxy_Engine
         }
 
         #endregion // Operator
-               
 
     }
-
-
-    /* Non Generic Version of the Cell
-    public class Cell
-    {
-
-        #region Fields
-
-        private Map _grid;
-        private Point _coord; // grid coordinates
-
-        #endregion // Fields
-
-        #region Properties
-
-        public Map Grid { get { return _grid; } protected internal set { _grid = value; } }
-
-        public Point Coord { get { return _coord; } protected internal set { _coord = value; } }
-        public int Col { get { return _coord.X; } protected internal set { _coord.X = value; } }
-        public int Row { get { return _coord.Y; } protected internal set { _coord.Y = value; } }
-
-        public int Width { get { return _grid.Width; } }
-        public int Height { get { return _grid.Height; } }
-
-        public Vector2 Position { get { return GetPosition(); } }
-        public float X { get { return GetPosition().X; } }
-        public float Y { get { return GetPosition().Y; } }
-        public Vector2 Center { get { return GetCenter(); } }
-
-        public AABB Bounds { get { return GetBounds(); } }
-
-        #endregion // Properties
-
-
-        #region Init
-
-        public Cell(Map grid)
-        {
-            _grid = grid;
-        }
-
-        #endregion // Init
-
-
-        #region Methods
-
-        public Vector2 GetPosition()
-        {
-            float x, y;
-            x = (Width * Col) + _grid.Position.X;
-            y = (Height * Row) + _grid.Position.Y;
-            return new Vector2(x, y);
-        }
-        public Vector2 GetCenter()
-        {
-            float x, y;
-            x = Width / 2;
-            y = Height / 2;
-            return new Vector2(x, y);
-        }
-        public AABB GetBounds()
-        {
-            return new AABB(Position, Width, Height);
-        }
-
-        #endregion // Methods
-
-
-        #region Operators
-
-        public static bool operator !=(Cell a, Cell b)
-        {
-            if ((object)a == null)
-            {
-                return (object)b != null;
-            }
-
-            return !a.Equals(b);
-        }
-        public static bool operator ==(Cell a, Cell b)
-        {
-            if ((object)a == null)
-            {
-                return (object)b == null;
-            }
-
-            return a.Equals(b);
-        }
-
-        public override int GetHashCode()
-        {
-            // TODO : generate a hash
-            return base.GetHashCode();
-        }
-        public override bool Equals(object obj)
-        {
-            Cell item;
-            if (obj is Cell)
-            {
-                item = (Cell)obj;
-                if (item._grid == _grid &&
-                    item._coord == _coord)
-                    return true;
-            }
-
-            return false;
-        }
-
-        #endregion // Operator
-
-    }
-    // */
-
 }

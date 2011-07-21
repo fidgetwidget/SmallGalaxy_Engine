@@ -12,7 +12,119 @@ using SmallGalaxy_Engine.Entities;
 namespace SmallGalaxy_Engine
 {
 
-    public class Map<T> : Grid<Cell<T>> where T : Entity, ITileable
+    public class Map
+    {
+
+        #region Fields
+
+        private Vector2 _position = Vector2.Zero; // the position of a cell at coord {0,0}
+        private int _itemWidth, _itemHeight;
+        private bool _hasLimits = false;
+        private int _minRow = int.MinValue, _minCol = int.MinValue;
+        private int _maxRow = int.MaxValue, _maxCol = int.MaxValue;
+        private bool _wrapH = false;
+        private bool _wrapV = false;
+
+        #endregion // Fields
+
+
+        #region Properties
+
+        public Vector2 Position { get { return _position; } set { SetPosition(value.X, value.Y); } }
+        public float X { get { return _position.X; } set { SetPosition(value, _position.Y); } }
+        public float Y { get { return _position.Y; } set { SetPosition(_position.X, value); } }
+
+        public int CellWidth { get { return _itemWidth; } }
+        public int CellHeight { get { return _itemHeight; } }
+
+        public bool WrapHorizontally { get { return _wrapH; } set { _wrapH = value; } }
+        public bool WrapVertically { get { return _wrapV; } set { _wrapV = value; } }
+
+        #endregion // Properties
+
+
+        #region Init
+
+        public Map(int cellWidth, int cellHeight)
+        {
+            _itemWidth = cellWidth;
+            _itemHeight = cellHeight;
+        }
+
+        #endregion // Init
+
+
+        #region Methods
+
+        // Returns the Coord of the Cell at world position {x,y}
+        public Point CoordOf(float x, float y)
+        {
+            int xCoord, yCoord;
+            CoordOf(x, y, out xCoord, out yCoord);
+            return new Point(xCoord, yCoord);
+        }
+        public Point CoordOf(Vector2 worldPosition)
+        {
+            return CoordOf(worldPosition.X, worldPosition.Y);
+        }
+        public void CoordOf(float x, float y, out int xCoord, out int yCoord)
+        {
+            xCoord = (int)Math.Floor((x - Position.X) / _itemWidth);
+            yCoord = (int)Math.Floor((y - Position.Y) / _itemHeight);
+
+            if (xCoord > 0 && xCoord > _maxCol) { xCoord = _wrapH ? xCoord % _maxCol : _maxCol; } 
+            else if (xCoord < 0 && xCoord < _minCol) { xCoord = _wrapH ? xCoord % _minCol : _minCol; }
+
+            if (yCoord > 0 && yCoord > _maxRow) { yCoord = _wrapV ? yCoord % _maxRow : _maxRow; }
+            else if (yCoord < 0 && yCoord < _minRow) { yCoord = _wrapV ? yCoord % _minRow : _minRow; }
+        }
+        public void CoordOf(Vector2 worldPosition, out int xCoord, out int yCoord)
+        {
+            CoordOf(worldPosition.X, worldPosition.Y, out xCoord, out yCoord);
+        }
+
+        // Returns the world position of the Cell at the given coords {xCoord,yCoord}
+        // Doesn't wrap the position based on Map limits and wrapping
+        public Vector2 PositionOf(int xCoord, int yCoord)
+        {
+            float x, y;
+            PositionOf(xCoord, yCoord, out x, out y);
+            return new Vector2(x, y);
+        }
+        public Vector2 PositionOf(Point coord)
+        {
+            return PositionOf(coord.X, coord.Y);
+        }
+        public void PositionOf(int xCoord, int yCoord, out float x, out float y)
+        {
+            x = xCoord * CellWidth + X;
+            y = yCoord * CellHeight + Y;
+        }
+        public void PositionOf(Point coord, out float x, out float y)
+        {
+            PositionOf(coord.X, coord.Y, out x, out y);
+        }
+        public void PositionOf(int xCoord, int yCoord, out Vector2 position)
+        {
+            PositionOf(xCoord, yCoord, out position.X, out position.Y);
+        }
+        public void PositionOf(Point coord, out Vector2 position)
+        {
+            PositionOf(coord.X, coord.Y, out position.X, out position.Y);
+        }
+
+        public void SetPosition(float x, float y)
+        {
+            _position.X = x;
+            _position.Y = y;
+        }
+
+        #endregion // Methods
+
+    }
+
+    // A list of Generic Cell's
+    public class Map<T> : Grid<T> where T : class, ITileable<T>, new()
     {
 
         #region Fields
@@ -33,8 +145,8 @@ namespace SmallGalaxy_Engine
         public float X { get { return _position.X; } set { SetPosition(value, _position.Y); } }
         public float Y { get { return _position.Y; } set { SetPosition(_position.X, value); } }
 
-        public int Width { get { return _cellWidth; } }
-        public int Height { get { return _cellHeight; } }
+        public int CellWidth { get { return _cellWidth; } }
+        public int CellHeight { get { return _cellHeight; } }
 
         #endregion // Propetries
 
@@ -50,22 +162,20 @@ namespace SmallGalaxy_Engine
 
         public override void Initialize()
         {
-            Initialize(false);
+            Initialize(false);            
         }
+
         public void Initialize(bool populate)
         {
             for (int row = 0; row < RowCount; row++)
             {
                 for (int col = 0; col < ColCount; col++)
                 {
-                    if (populate)
-                        grid[col, row] = new Cell<T>(this);
-                    else
-                        if (grid[col, row] == null) { continue; }
+                    if (populate) { grid[col, row] = new T(); }
+                    if (grid[col, row] == null) { continue; }
 
-                    grid[col, row].Map = this;
-                    grid[col, row].Col = col;
-                    grid[col, row].Row = row;
+                    grid[col, row].SetMap(this);
+                    grid[col, row].SetCoord(col, row);
                 }
             }
             IsInitialized = true;
@@ -76,19 +186,15 @@ namespace SmallGalaxy_Engine
 
         #region Methods
 
-        public void AddTile(Point coord) { AddTile(coord.X, coord.Y); }
-        public virtual void AddTile(int col, int row) { SetAt(col, row, new Cell<T>(this)); }
-
-        protected override void SetAt(int col, int row, Cell<T> value)
+        protected override void SetAt(int col, int row, T value)
         {
             if (col < 0 || col >= ColCount) return;
             if (row < 0 || row >= RowCount) return;
             grid[col, row] = value;
             if (value == null) return;
 
-            value.Map = this;
-            value.Col = col;
-            value.Row = row;
+            value.SetMap(this);
+            value.SetCoord(col, row);
         }
 
         protected void SetPosition(float x, float y)
@@ -97,16 +203,16 @@ namespace SmallGalaxy_Engine
             _position.Y = y;
         }
 
-        public Cell<T> GetNeighborCell(Point coord, TileDirections direction)
+        public T GetNeighbor(Point coord, TileDirections direction)
         {
-            Point nCoord = GetNeighbor(coord, direction);
+            Point nCoord = GetNeighborCoord(coord, direction);
             if (InBounds(nCoord))
                 return this[nCoord];
             else
                 return null;
         }
 
-        public Point GetNeighbor(Point coord, TileDirections direction)
+        public Point GetNeighborCoord(Point coord, TileDirections direction)
         {
             Point neighbor = Tiles.Neighbor(coord, direction);
             if (neighbor.X < 0 || neighbor.Y < 0 ||
@@ -119,16 +225,16 @@ namespace SmallGalaxy_Engine
             }
 
             if (this[neighbor] == null)
-                return GetNeighbor(neighbor, direction);
+                return GetNeighborCoord(neighbor, direction);
 
             return neighbor;
         }
 
-        public Cell<T> AtPoint(Vector2 point)
+        public T AtPosition(Vector2 point)
         {
-            return AtPoint(point.X, point.Y);
+            return AtPosition(point.X, point.Y);
         }
-        public Cell<T> AtPoint(float x, float y)
+        public T AtPosition(float x, float y)
         {
             int X = (int)Math.Floor((x - Position.X) / _cellWidth);
             int Y = (int)Math.Floor((y - Position.Y) / _cellHeight);
@@ -158,7 +264,6 @@ namespace SmallGalaxy_Engine
             br.Y = (int)MathHelper.Clamp(br.Y + 1, 0, RowCount);
         }
 
-        // because this is the one we will use almost every time, it can have the default name
         public List<Point> CoordinateSubset(Rectangle area)
         {
             Point tl = CoordinateOf(area.Left, area.Top);
@@ -183,224 +288,8 @@ namespace SmallGalaxy_Engine
             return subset;
         }
 
-        // Because Lists are faster to loop through, this is only to avoid using List.ToArray()
-        public Point[] CoordinateSubsetArray(Rectangle area)
-        {
-            Point tl, br;
-            GetCornerCoords(ref area, out tl, out br);
-
-            Point[] subset = new Point[((br.X - tl.X) * (br.Y - tl.Y))];
-            if (subset.Length > 0)
-            {
-                int i = 0;
-                for (int row = tl.Y; row < br.Y; row++)
-                {
-                    for (int col = tl.X; col < br.X; col++)
-                    {
-                        subset[i++] = new Point(col, row);
-                    }
-                }
-            }
-            return subset;
-        }
-
         #endregion // Methods
 
     }
-
-
-    /* Non Generic Version of the Map
-    public class Map : Grid<Cell>
-    {
-
-        #region Fields
-
-        private Vector2 _position;
-        private int _cellWidth, _cellHeight;
-
-        #endregion // Fields
-
-
-        #region Properties
-
-        /// <summary>
-        /// Sets the Grid Position (offsetting the position of all Tile objects in the grid)
-        /// </summary>
-        /// <remarks> Changing the position of a large grid is expensive, so set the position before populating the grid </remarks>
-        public Vector2 Position { get { return _position; } set { SetPosition(value.X, value.Y); } }
-        public float X { get { return _position.X; } set { SetPosition(value, _position.Y); } }
-        public float Y { get { return _position.Y; } set { SetPosition(_position.X, value); } }
-        
-        public int Width { get { return _cellWidth; } }
-        public int Height { get { return _cellHeight; } }
-
-        #endregion // Propetries
-
-
-        #region Init
-
-        public Map(int width, int height, int colCount, int rowCount)
-            : base(colCount, rowCount)
-        {
-            _cellWidth = width;
-            _cellHeight = height;
-        }
-
-        public override void Initialize()
-        {
-            Initialize(false);
-        }
-        public void Initialize(bool populate)
-        {
-            for (int row = 0; row < RowCount; row++)
-            {
-                for (int col = 0; col < ColCount; col++)
-                {
-                    if (populate)
-                        grid[col, row] = new Cell(this);
-                    else
-                        if (grid[col, row] == null) { continue; }
-
-                    grid[col, row].Grid = this;
-                    grid[col, row].Col = col;
-                    grid[col, row].Row = row;
-                }
-            }
-            IsInitialized = true;
-        }
-
-        #endregion // Init
-
-
-        #region Methods
-        
-        public void AddTile(Point coord) { AddTile(coord.X, coord.Y); }
-        public virtual void AddTile(int col, int row) { SetAt(col, row, new Cell(this)); }
-
-        protected override void SetAt(int col, int row, Cell value)
-        {
-            if (col < 0 || col >= ColCount) return;
-            if (row < 0 || row >= RowCount) return;
-            grid[col, row] = value;
-            if (value == null) return;
-
-            value.Grid = this;
-            value.Col = col;
-            value.Row = row;
-        }
-
-        protected void SetPosition(float x, float y)
-        {
-            _position.X = x;
-            _position.Y = y;
-        }
-
-        public Cell GetNeighborCell(Point coord, TileDirections direction)
-        {
-            return this[GetNeighbor(coord, direction)];
-        }
-
-        public Point GetNeighbor(Point coord, TileDirections direction)
-        {
-            Point neighbor = Cell.Neighbor(coord, direction);
-            if (neighbor.X < 0 || neighbor.Y < 0 ||
-                neighbor.X >= ColCount || neighbor.Y >= RowCount)
-            {
-                if (this[coord] != null)
-                    return coord;
-                else
-                    return new Point(-1, -1);
-            }
-
-            if (this[neighbor] == null)
-                return GetNeighbor(neighbor, direction);
-
-            return neighbor;
-        }
-
-        public Cell AtPoint(Vector2 point)
-        {
-            return AtPoint(point.X, point.Y);
-        }
-        public Cell AtPoint(float x, float y)
-        {
-            int X = (int)Math.Floor((x - Position.X) / _cellWidth);
-            int Y = (int)Math.Floor((y - Position.Y) / _cellHeight);
-            return this[X, Y];
-        }
-
-        public Point CoordinateOf(Vector2 worldPosition)
-        {
-            return CoordinateOf(worldPosition.X, worldPosition.Y);
-        }
-        public Point CoordinateOf(float x, float y)
-        {
-            int X = (int)Math.Floor((x - Position.X) / _cellWidth);
-            int Y = (int)Math.Floor((y - Position.Y) / _cellHeight);
-
-            return new Point(X, Y);
-        }
-
-        public void GetCornerCoords(ref Rectangle area, out Point tl, out Point br)
-        {
-            tl = CoordinateOf(area.Left, area.Top);
-            tl.X = (int)MathHelper.Clamp(tl.X, 0, ColCount);
-            tl.Y = (int)MathHelper.Clamp(tl.Y, 0, RowCount);
-
-            br = CoordinateOf(area.Right, area.Bottom);
-            br.X = (int)MathHelper.Clamp(br.X + 1, 0, ColCount);
-            br.Y = (int)MathHelper.Clamp(br.Y + 1, 0, RowCount);
-        }
-
-        // because this is the one we will use almost every time, it can have the default name
-        public List<Point> CoordinateSubset(Rectangle area)
-        {
-            Point tl = CoordinateOf(area.Left, area.Top);
-            tl.X = (int)MathHelper.Clamp(tl.X, 0, ColCount);
-            tl.Y = (int)MathHelper.Clamp(tl.Y, 0, RowCount);
-
-            Point br = CoordinateOf(area.Right, area.Bottom);
-            br.X = (int)MathHelper.Clamp(br.X + 1, 0, ColCount);
-            br.Y = (int)MathHelper.Clamp(br.Y + 1, 0, RowCount);
-
-            List<Point> subset = new List<Point>((br.X - tl.X) * (br.Y - tl.Y));
-            if (subset.Capacity > 0)
-            {
-                for (int row = tl.Y; row < br.Y; row++)
-                {
-                    for (int col = tl.X; col < br.X; col++)
-                    {
-                        subset.Add(new Point(col, row));
-                    }
-                }
-            }
-            return subset;
-        }
-
-        // Because Lists are faster to loop through, this is only to avoid using List.ToArray()
-        public Point[] CoordinateSubsetArray(Rectangle area)
-        {
-            Point tl, br;
-            GetCornerCoords(ref area, out tl, out br);
-
-            Point[] subset = new Point[((br.X - tl.X) * (br.Y - tl.Y))];
-            if (subset.Length > 0)
-            {
-                int i = 0;
-                for (int row = tl.Y; row < br.Y; row++)
-                {
-                    for (int col = tl.X; col < br.X; col++)
-                    {
-                        subset[i++] = new Point(col, row);
-                    }
-                }
-            }
-            return subset;
-        }
-
-        #endregion // Methods
-        
-    }
-    //*/
     
 }

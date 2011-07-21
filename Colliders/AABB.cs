@@ -20,20 +20,16 @@ namespace SmallGalaxy_Engine.Colliders
         public float Top { get { return lowerBound.Y; } }
         public float Bottom { get { return upperBound.Y; } }
 
-        public Vector2 Center { get { return 0.5f * (upperBound + lowerBound); } }
-        
+        public float Width { get { return upperBound.X - lowerBound.X; } }
+        public float Height { get { return upperBound.Y - lowerBound.Y; } }
+
+        public Vector2 Center { get { return 0.5f * (upperBound + lowerBound); } }        
         public Vector2 Extents { get { return 0.5f * (upperBound - lowerBound); } }
         
         #endregion // Properties
 
         #region Init
-
-        public AABB(Vector2 lowerBounds, Vector2 upperBounds)
-        {
-            lowerBound = lowerBounds;
-            upperBound = upperBounds;
-        }
-
+       
         public AABB(Rectangle rect)
         {
             lowerBound.X = rect.X;
@@ -41,15 +37,13 @@ namespace SmallGalaxy_Engine.Colliders
             upperBound.X = rect.X + rect.Width;
             upperBound.Y = rect.Y + rect.Height;
         }
-
         public AABB(float x, float y, float width, float height)
         {
             lowerBound.X = x;
             lowerBound.Y = y;
             upperBound.X = lowerBound.X + width;
             upperBound.Y = lowerBound.Y + height;
-        }
-        
+        }    
         public AABB(Vector2 position, float width, float height)
         {
             lowerBound.X = position.X;
@@ -57,17 +51,21 @@ namespace SmallGalaxy_Engine.Colliders
             upperBound.X = lowerBound.X + width;
             upperBound.Y = lowerBound.Y + height;
         }
-
+        public AABB(Vector2 lowerBounds, Vector2 upperBounds)
+        {
+            lowerBound = lowerBounds;
+            upperBound = upperBounds;
+        }
         
         #endregion // Init
 
         #region Methods
 
+        #region Collision
         public bool Intersects(Vector2 point)
         {
             return AABB.IntersectsPoint(this, point);
         }
-
         public bool Intersects(AABB aabb)
         {
             Vector2 d1, d2;
@@ -92,6 +90,7 @@ namespace SmallGalaxy_Engine.Colliders
 
             return true;
         }
+        #endregion // Collision
 
         // Add the other to this bounds
         public void Combine(ref AABB aabb)
@@ -99,7 +98,6 @@ namespace SmallGalaxy_Engine.Colliders
             upperBound = Vector2.Min(upperBound, aabb.upperBound);
             lowerBound = Vector2.Max(lowerBound, aabb.lowerBound);
         }
-
         public Rectangle ToRectangle()
         {
             int x, y, width, height;
@@ -110,6 +108,20 @@ namespace SmallGalaxy_Engine.Colliders
 
             return new Rectangle(x, y, width, height);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is AABB)
+            {
+                AABB aabb = (AABB)obj;
+                return (
+                    this.lowerBound.X == aabb.lowerBound.X &&
+                    this.lowerBound.Y == aabb.lowerBound.Y &&
+                    this.upperBound.X == aabb.upperBound.X &&
+                    this.upperBound.Y == aabb.upperBound.Y);
+            }
+            return base.Equals(obj);
+        }
         public override string ToString()
         {
             return string.Format("lowerBound:{0} upperBound:{1}", lowerBound, upperBound);
@@ -117,7 +129,9 @@ namespace SmallGalaxy_Engine.Colliders
         
         #endregion // Methods
 
-        // STATIC 
+
+        #region Static Collision Methods
+
         public static bool Overlap(AABB a, AABB b)
         {
             return a.Intersects(b);
@@ -147,19 +161,7 @@ namespace SmallGalaxy_Engine.Colliders
             float depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
             return new Vector2(depthX, depthY);
         }
-        public static AABB operator + (Vector2 offset, AABB bounds)
-        {
-            AABB result = new AABB();
-            result.lowerBound = bounds.lowerBound + offset;
-            result.upperBound = bounds.upperBound + offset;
-
-            return result;
-        }
-        public static AABB operator + (AABB bounds, Vector2 offset)
-        {
-            return offset + bounds;
-        }
-
+               
         // Does the Point Intersect with the AABB a
         public static bool IntersectsPoint(AABB a, Vector2 point)
         {
@@ -168,15 +170,25 @@ namespace SmallGalaxy_Engine.Colliders
                 point.Y < a.Bottom && point.Y > a.Top);
         }
 
-        // Does the Line (lineStart, lineEnd) Intersect with AABB a - returns the hitPoint (lineStart of lineEnd if the AABB contains it)
-        public static bool IntersectsLine(AABB a, Vector2 lineStart, Vector2 lineEnd, out Vector2 hitPoint, bool earlyExit = true)
+        public static bool IntersectsLine_Fast(AABB a, Vector2 lineStart, Vector2 lineEnd)
         {
-            if (earlyExit)
-            {
-                if (IntersectsPoint(a, lineStart)) { hitPoint = lineStart; return true; }
-                if (IntersectsPoint(a, lineEnd)) { hitPoint = lineEnd; return true; }
-            }
+            if (a.Intersects(lineStart) || a.Intersects(lineEnd)) { return true; }
 
+            LineSegment te, re, be, le;
+            te = new LineSegment(new Vector2(a.Left, a.Top), new Vector2(a.Right, a.Top));
+            re = new LineSegment(new Vector2(a.Right, a.Top), new Vector2(a.Right, a.Bottom));
+            be = new LineSegment(new Vector2(a.Right, a.Bottom), new Vector2(a.Left, a.Bottom));
+            le = new LineSegment(new Vector2(a.Left, a.Bottom), new Vector2(a.Left, a.Top));
+
+            return (Collider.LinesIntersect_Fast(lineStart, lineEnd, te.start, te.end) ||
+                Collider.LinesIntersect_Fast(lineStart, lineEnd, re.start, re.end) ||
+                Collider.LinesIntersect_Fast(lineStart, lineEnd, be.start, be.end) ||
+                Collider.LinesIntersect_Fast(lineStart, lineEnd, le.start, le.end));
+        }
+
+        // TODO: return ALL hit points (including ends if they are within the bounds of the AABB)
+        public static bool IntersectsLine(AABB a, Vector2 lineStart, Vector2 lineEnd, out Vector2 hitPoint)
+        {
             LineSegment te, re, be, le;
             te = new LineSegment(new Vector2(a.Left, a.Top), new Vector2(a.Right, a.Top));
             re = new LineSegment(new Vector2(a.Right, a.Top), new Vector2(a.Right, a.Bottom));
@@ -186,9 +198,28 @@ namespace SmallGalaxy_Engine.Colliders
             return (Collider.LinesIntersect(lineStart, lineEnd, te.start, te.end, out hitPoint) ||
                 Collider.LinesIntersect(lineStart, lineEnd, re.start, re.end, out hitPoint) ||
                 Collider.LinesIntersect(lineStart, lineEnd, be.start, be.end, out hitPoint) ||
-                Collider.LinesIntersect(lineStart, lineEnd, le.start, le.end, out hitPoint)); 
+                Collider.LinesIntersect(lineStart, lineEnd, le.start, le.end, out hitPoint));
 
         }
+
+        #endregion // Static Collision Methods
+
+        #region Static Operators
+
+        public static AABB operator +(Vector2 offset, AABB bounds)
+        {
+            AABB result = new AABB();
+            result.lowerBound = bounds.lowerBound + offset;
+            result.upperBound = bounds.upperBound + offset;
+
+            return result;
+        }
+        public static AABB operator +(AABB bounds, Vector2 offset)
+        {
+            return offset + bounds;
+        }
+
+        #endregion // Static Operators
 
     }
 

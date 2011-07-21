@@ -123,8 +123,9 @@
     <Compile Include="Entities\Actors\Actor.cs" />
     <Compile Include="Entities\Interfaces.cs" />
     <Compile Include="Entities\Transform.cs" />
+    <Compile Include="Graphics\Lighting\DiffusedLightMap.cs" />
     <Compile Include="Graphics\Lighting\IShadowCaster.cs" />
-    <Compile Include="Graphics\Lighting\LightMap.cs" />
+    <Compile Include="Graphics\Lighting\ShadowMap.cs" />
     <Compile Include="Primitives\Shape.cs" />
     <Compile Include="Primitives\Path\Path.cs" />
     <Compile Include="Common\MatrixHelper.cs" />

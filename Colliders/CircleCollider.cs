@@ -53,6 +53,16 @@ namespace SmallGalaxy_Engine.Colliders
             return false;
         }
 
+        public override bool IntersectsLine(Vector2 start, Vector2 end, out Vector2 hitPoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IntersectsPoint(Vector2 point)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion // Methods
 
     }

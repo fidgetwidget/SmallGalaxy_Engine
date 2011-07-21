@@ -14,7 +14,7 @@ namespace SmallGalaxy_Engine.Colliders
         NumberOfTypes
     }
 
-    public class Collider
+    public abstract class Collider
     {
 
         #region Fields
@@ -78,18 +78,39 @@ namespace SmallGalaxy_Engine.Colliders
                     return false;
             }
         }
-        protected virtual bool CollideRectangle(RectangleCollider other, out CollisionData data) { data = new CollisionData(); return false; }
-        protected virtual bool CollideCircle(CircleCollider other, out CollisionData data) { data = new CollisionData(); return false; }
-        protected virtual bool CollidePolygon(PolygonCollider other, out CollisionData data) { data = new CollisionData(); return false; }
 
-        public virtual bool IntersectsPoint(Vector2 point) { return false; }
-        public virtual bool IntersectsLine(Vector2 start, Vector2 end, out Vector2 hitPoint) { hitPoint = Vector2.Zero; return false; }
+        // ABSTRACT METHODS
+        protected abstract bool CollideRectangle(RectangleCollider other, out CollisionData data);
+        protected abstract bool CollideCircle(CircleCollider other, out CollisionData data);
+        protected abstract bool CollidePolygon(PolygonCollider other, out CollisionData data);
+
+        public abstract bool IntersectsPoint(Vector2 point);
+        public abstract bool IntersectsLine(Vector2 start, Vector2 end, out Vector2 hitPoint);
+
+        #endregion // Methods
+
+
+        #region Static Collision Methods
 
         public static bool Collide(Collider a, Collider b, out CollisionData data)
         {
             return a.Collide(b, out data);
         }
 
+        public static bool LinesIntersect_Fast(Vector2 aStart, Vector2 aEnd, Vector2 bStart, Vector2 bEnd)
+        {
+            Vector2 s1, s2;
+            s1 = aEnd - aStart;
+            s2 = bEnd - bStart;
+
+            float s, t;
+            s = (-s1.Y * (aStart.X - bStart.X) + s1.X * (aStart.Y - bStart.Y)) / (-s2.X * s1.Y + s1.X * s2.Y);
+            t = (s2.X * (aStart.Y - bStart.Y) - s2.Y * (aStart.X - bStart.X)) / (-s2.X * s1.Y + s1.X * s2.Y);
+
+            if (s >= 0 && s <= 1 && t >= 0 && t <= 1) return true;
+
+            return false;
+        }
         public static bool LinesIntersect(Vector2 aStart, Vector2 aEnd, Vector2 bStart, Vector2 bEnd, out Vector2 hitPoint)
         {
             Vector2 s1, s2;
@@ -109,7 +130,9 @@ namespace SmallGalaxy_Engine.Colliders
             return false;
         }
 
-        #endregion // Methods
+        #endregion // Static Collision Methods
+
+        
 
     }
 }
